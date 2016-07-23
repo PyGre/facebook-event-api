@@ -6,7 +6,6 @@ import tornado.concurrent
 import random
 import datetime
 import tornado.httpclient
-import pprint
 
 # ------------------------------------------------------------------------------
 
@@ -43,7 +42,7 @@ class MockRequestHandler(ApiRequestHandler):
             'description':  random.choice(str_choices),
             'start_time':   datetime.datetime.now().isoformat(),
             'end_time':     datetime.datetime.now().isoformat(),
-            'attenting':    random.randint(0, 42),
+            'attending':    random.randint(0, 42),
             'interested':   random.randint(0, 42),
             'place': {
                 'id':       generateMockId(),
