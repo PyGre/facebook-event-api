@@ -44,3 +44,13 @@ Response type: application/json
     }
 ]
 ```
+
+## Installation
+
+* Clone the repository
+* Install the requirements with pip
+* Create a config.py file at the root of the working copy containing the following:
+
+```
+facebook_page_access_token = 'YourLongLivedAccessTokenPastedHere'
+```

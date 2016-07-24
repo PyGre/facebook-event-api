@@ -27,16 +27,12 @@ class PyGreApplication(tornado.web.Application):
             logger = logging.getLogger('tornado.application')
             logger.critical('KeyboardInterrupt: Shutting down...')
 
-def watchFiles(directory):
-    for root, _, files in os.walk(directory):
-        [tornado.autoreload.watch(root + '/' + f) for f in files]
-
 # ------------------------------------------------------------------------------
 
 def main():
     root_directory = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
-    # Define & parse command line options
+    # Define & parse command line & config file options
     tornado.options.define('debug', default=False, help='Enable Debug mode')
     tornado.options.define('mock', default=False, help='Generate mock responses')
     tornado.options.define('cookie_secret', default='', help='Secret for encypting cookies')
@@ -59,7 +55,7 @@ def main():
         **opt.as_dict()
     )
 
-    if tornado.options.options.debug:
+    if opt.debug:
         tornado.log.enable_pretty_logging()
 
     app.start()

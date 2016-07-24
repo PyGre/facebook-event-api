@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import tornado.web
+import tornado.gen
 import tornado.escape
 import tornado.concurrent
 import random
 import datetime
 import tornado.httpclient
+import urllib.parse
 
 # ------------------------------------------------------------------------------
 
@@ -53,23 +55,22 @@ class MockRequestHandler(ApiRequestHandler):
 # ------------------------------------------------------------------------------
 
 class FacebookEventListHandler(MockRequestHandler):
-    # todo: Make asynchronous
 
-    def get(self, *args, **kwargs):
+    async def get(self, *args, **kwargs):
         page_id = '1026070194112923'
-        events = self._fetch_page_events(page_id)
+        events = await self._fetch_page_events(page_id)
         data = []
         for event in events:
-            data.append(self._complete_event_data(event))
+            data.append(await self._complete_event_data(event))
         self.write(tornado.escape.json_encode(data))
 
     # --
 
-    def _fetch_page_events(self, page_id):
+    async def _fetch_page_events(self, page_id):
         url = self._generate_api_url('{page}/events'.format(page=page_id))
-        http_client = tornado.httpclient.HTTPClient()
+        http_client = tornado.httpclient.AsyncHTTPClient()
         try:
-            response = http_client.fetch(url)
+            response = await http_client.fetch(url)
             data = tornado.escape.json_decode(response.body.decode('utf-8'))
             events = data.get('data', []) # ignore paging for now
             return events
@@ -82,12 +83,12 @@ class FacebookEventListHandler(MockRequestHandler):
             print("Error: " + str(e))
         return []
 
-    def _complete_event_data(self, event_data):
+    async def _complete_event_data(self, event_data):
         url = self._generate_api_url('{event}'.format(event=event_data['id']),
                                      fields='attending_count,interested_count')
-        http_client = tornado.httpclient.HTTPClient()
+        http_client = tornado.httpclient.AsyncHTTPClient()
         try:
-            response = http_client.fetch(url)
+            response = await http_client.fetch(url)
             data = tornado.escape.json_decode(response.body.decode('utf-8'))
             return {
                 **event_data,
@@ -104,7 +105,6 @@ class FacebookEventListHandler(MockRequestHandler):
         return { **event_data,  'attending': 0, 'interested': 0 }
 
     def _generate_api_url(self, node, **kwargs):
-        base_url = 'https://graph.facebook.com/v2.7/'
         kwargs['access_token'] = self.application.access_token
-        args = '&'.join(['{k}={v}'.format(k=str(key), v=str(value)) for key, value in kwargs.items()])
-        return base_url + node + '?' + args
+        args = urllib.parse.urlencode(kwargs)
+        return 'https://graph.facebook.com/v2.7/' + node + '?' + args
