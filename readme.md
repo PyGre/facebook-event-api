@@ -3,14 +3,14 @@
 This project is a small Python (Tornado) server that exposes a JSON API to describe
 the public events hosted by the PyGre.io [Facebook page](https://facebook.com/pygre.io/events).
 
-It is consumed by an Angular2 service in the PyGre.io main landing page, in the
+It is consumed by a front-end service in the PyGre.io main landing page, in the
 calendar view of the upcoming courses.
 
-Accessing the Facebook Graph API directly from Angular would require to publicly
-share the page access token (long-lived, therefore non-expiring), which would
-cause security issues. The data exposed by this API is publicly visible (even
-without a Facebook account), no names (of people attending or interested) are
-sent in the JSON response.
+Accessing the Facebook Graph API directly from the front-end would require to
+publicly share the page access token (long-lived, therefore non-expiring), which
+would cause security issues. The data exposed by this API is publicly visible
+(even without a Facebook account), no names (of people attending or interested)
+are sent in the JSON response.
 
 ## API Documentation:
 
