@@ -89,7 +89,7 @@ class FacebookEventListHandler(MockRequestHandler):
         return []
 
     async def _complete_event_data(self, event_data):
-        url = self._generate_api_url(str(event_data['id'])
+        url = self._generate_api_url(event_data['id'],
                                      fields='attending_count,interested_count')
         http_client = tornado.httpclient.AsyncHTTPClient()
         try:
